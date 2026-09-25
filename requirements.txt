@@ -31,6 +31,7 @@ psycopg-binary==3.3.6
 Pygments==2.21.0
 pypdf==6.19.0
 pytest==9.1.1
+python-dotenv==1.2.3
 PyYAML==6.0.3
 regex==2026.9.10
 requests==2.34.2
