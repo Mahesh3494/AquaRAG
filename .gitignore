@@ -6,3 +6,4 @@ corpus/**/*.htm
 corpus/**/*.html
 .env
 drills/
+verify_out.txt
