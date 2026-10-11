@@ -3,7 +3,8 @@ import psycopg
 
 from src.embeddings import embed_texts
 from src.ingestion import build_chunks
-from src.store import insert_chunks
+from src.store import insert_chunks, search
+from src.generation import answer
 
 def index_pdf(
     conn: psycopg.Connection, pdf_path: Path, chunk_size: int, overlap: int
@@ -26,3 +27,26 @@ def index_pdf(
     insert_chunks(conn, records, vectors)
     # 5. Return how many records there were.
     return len(records)
+
+def ask(conn: psycopg.Connection, question: str, k: int = 5) -> str:
+    """Answer a question from the indexed corpus, with citations.
+
+    Args:
+        conn: An open database connection.
+        question: The user's question.
+        k: How many chunks to retrieve.
+
+    Returns:
+        The model's answer, citing retrieved chunks by their label.
+
+    Raises:
+        ValueError: If nothing was retrieved — an empty index.
+    """
+    # 1. Embed the question. embed_texts takes a LIST of strings and
+    #    returns a LIST of vectors, so wrap the question going in and
+    #    take the first vector back out.
+    query_vector = embed_texts([question])[0]
+    # 2. Call search with the connection, that vector, and k.
+    results = search(conn, query_vector, k)
+    # 3. Pass question and results to answer(), and return the result.
+    return answer(question, results)
