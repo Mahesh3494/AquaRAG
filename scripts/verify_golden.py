@@ -7,28 +7,11 @@ import re
 
 from src.extraction import extract_pages
 from pathlib import Path
+from src.evaluation import page_number
 
 GOLDEN_PATH = "data/golden.csv"
 CORPUS_DIR = "corpus"
 
-
-def page_number(source_loc: str) -> int:
-    """Pull the page number out of a source_loc string.
-
-    "p. 11"                -> 11
-    "p.17"                 -> 17
-    "Section 3.1.2, p. 12" -> 12
-
-    Raises:
-        ValueError: If no page number can be found.
-    """
-    # 1. Use re.search with the pattern r"p\.\s*(\d+)" against source_loc.
-    # 2. If there is no match, raise ValueError naming the offending string.
-    # 3. Otherwise return the captured group, converted to an int.
-    m = re.search(r"p\.\s*(\d+)", source_loc)
-    if m is None:
-        raise ValueError(f"No page number found, the exact data given is {source_loc}")
-    return int(m.group(1))
 
 
 def main() -> None:
