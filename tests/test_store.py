@@ -1,7 +1,7 @@
 import pytest
 
 from src.embeddings import EMBEDDING_DIM
-from src.store import connect, create_table, insert_chunks
+from src.store import connect, create_table, insert_chunks, load_all_chunks
 
 
 def unit_vector(position: int) -> list[float]:
@@ -119,3 +119,18 @@ def test_search_result_carries_its_metadata(conn):
     assert result["page"] == 12
     assert result["chunk_index"] == 0
     assert set(result) == {"text", "source_doc", "page", "chunk_index", "score"}
+
+def test_load_all_chunks_returns_every_row(conn):
+    insert_chunks(conn, [record("a", 1), record("b", 2)], [unit_vector(0), unit_vector(1)])
+    assert len(load_all_chunks(conn)) == 2
+
+
+def test_load_all_chunks_gives_dicts_with_metadata(conn):
+    insert_chunks(conn, [record("optimal pH", 12)], [unit_vector(0)])
+    assert load_all_chunks(conn) == [
+        {"text": "optimal pH", "source_doc": "test.pdf", "page": 12, "chunk_index": 0}
+    ]
+
+
+def test_load_all_chunks_empty_table(conn):
+    assert load_all_chunks(conn) == []

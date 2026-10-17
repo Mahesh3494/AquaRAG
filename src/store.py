@@ -99,3 +99,28 @@ def search(conn: psycopg.Connection, query_vector: list[float], k: int = 5) -> l
 
     # 4. Return the list of dicts.
     return results
+
+def load_all_chunks(conn: psycopg.Connection) -> list[dict]:
+    """Return every stored chunk as a dict, in a stable order.
+
+    Each dict has text, source_doc, page, chunk_index — the same keys
+    keyword_search expects. No embeddings: keyword search doesn't use them.
+    """
+    # 1. Run this query and fetch all rows:
+    #    "SELECT text, source_doc, page, chunk_index FROM chunks "
+    #    "ORDER BY source_doc, page, chunk_index"
+    rows = conn.execute(
+        "SELECT text, source_doc, page, chunk_index FROM chunks "
+        "ORDER BY source_doc, page, chunk_index"
+    ).fetchall()
+    # 2. Turn each row tuple into a dict with those four keys.
+    results = []
+    for text, source_doc, page, chunk_index in rows:
+        results.append({
+            "text": text,
+            "source_doc": source_doc,
+            "page" : page,
+            "chunk_index": chunk_index,
+        })
+    # 3. Return the list.
+    return results
