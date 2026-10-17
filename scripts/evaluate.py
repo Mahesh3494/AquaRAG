@@ -8,12 +8,14 @@ import csv
 
 from src.embeddings import embed_texts
 from src.evaluation import is_hit, page_number
-from src.store import connect, search, load_all_chunks, search
+from src.store import connect, search, load_all_chunks
 from src.keyword_search import keyword_search
+from src.hybrid import fuse
 
 GOLDEN_PATH = "data/golden.csv"
 K = 1
-MODE = "keyword"   # "dense" or "keyword"
+MODE = "hybrid"   # "dense" or "keyword" or "hybrid"
+CANDIDATES = 20   # how many each search returns before fusing
 
 def main() -> None:
     """Run every golden question through retrieval and report hit rate."""
@@ -23,7 +25,7 @@ def main() -> None:
     # 2. Open a database connection with connect().
     conn = connect()
     # NEW
-    if MODE == "keyword":
+    if MODE in ("keyword", "hybrid"):
         chunks = load_all_chunks(conn)
 
     # 3. Make a counter for hits, starting at 0.
@@ -35,8 +37,13 @@ def main() -> None:
             query_vector = embed_texts([row["question"]])[0]
     #    b. Search with that vector and K.
             results = search(conn, query_vector, K)
-        else:
+        elif MODE == "keyword":
             results = keyword_search(chunks, row["question"], K)
+        else:
+            query_vector = embed_texts([row["question"]])[0]
+            dense_results = search(conn, query_vector, CANDIDATES)
+            keyword_results = keyword_search(chunks, row["question"], CANDIDATES)
+            results = fuse([dense_results, keyword_results], K)
     #    c. Get the expected page from row["source_loc"] via page_number().
         expected_page = page_number(row["source_loc"])
     #    d. Call is_hit with the results, row["source_doc"] and that page.
