@@ -3,8 +3,9 @@ import psycopg
 
 from src.embeddings import embed_texts
 from src.ingestion import build_chunks
-from src.store import insert_chunks, search
+from src.store import insert_chunks, search, load_all_chunks
 from src.generation import answer
+from src.keyword_search import keyword_search
 
 def index_pdf(
     conn: psycopg.Connection, pdf_path: Path, chunk_size: int, overlap: int
@@ -42,11 +43,9 @@ def ask(conn: psycopg.Connection, question: str, k: int = 5) -> str:
     Raises:
         ValueError: If nothing was retrieved — an empty index.
     """
-    # 1. Embed the question. embed_texts takes a LIST of strings and
-    #    returns a LIST of vectors, so wrap the question going in and
-    #    take the first vector back out.
-    query_vector = embed_texts([question])[0]
-    # 2. Call search with the connection, that vector, and k.
-    results = search(conn, query_vector, k)
+    # 1.Load every chunk
+    chunks = load_all_chunks(conn)
+    # 2. Keyword-search them
+    results = keyword_search(chunks, question, k)
     # 3. Pass question and results to answer(), and return the result.
     return answer(question, results)
