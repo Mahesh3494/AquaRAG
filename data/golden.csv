@@ -19,3 +19,33 @@ q017,"Besides PLs, which sources should be screened for EHP?","Broodstock, live 
 q018,Which disinfectant concentration is effective against EHP spore germination for 24 hours?,10 ppm of 65% active chlorine,ciba_2021_ehp_management.pdf,p. 73
 q019,What is the maximum permissible free CO2 concentration for trout?,20 mg/L,fao_1993_water_quality_fish_health.pdf,p. 23
 q020,What happens to fish when CO2 rises rapidly in low-oxygen water?,"Blood CO2 rises, causing acidosis",fao_1993_water_quality_fish_health.pdf,p. 23
+q021,"At what water temperature does survival of PvNV-infected shrimp decrease significantly?","Above 32°C",ciba_2022_shrimp_culture_disease.pdf,p. 83
+q022,"Which toxin-related regions are used to diagnose AHPND in shrimp?","PirAB toxin regions",ciba_2022_shrimp_culture_disease.pdf,p. 83
+q023,"Which soil parameters should be regularly monitored in shrimp culture ponds?","pH, organic carbon content, and redox potential",ciba_2022_shrimp_culture_disease.pdf,p. 121
+q024,"What is the maximum recommended redox potential of pond-bottom mud?","-200 mV",ciba_2022_shrimp_culture_disease.pdf,p. 121
+q025,"Which pond management method helps remove organic waste periodically?","A central drainage system",ciba_2022_shrimp_culture_disease.pdf,p. 121
+q026,"How long does Calcofluor white staining take to detect EHP spores?","5–10 minutes",ciba_2021_ehp_management.pdf,p. 44
+q027,"What color and shape do EHP spores appear under Calcofluor white staining?","Bluish-white or turquoise oval halo",ciba_2021_ehp_management.pdf,p. 44
+q028,"Which microscope is used to examine EHP spores after Calcofluor white staining?","Fluorescence microscope",ciba_2021_ehp_management.pdf,p. 44
+q029,"Which organisms are commonly used to test water toxicity in a laboratory?","Water fleas (Daphnia) and aquarium fish (Poecilia reticulata)",fao_1993_water_quality_fish_health.pdf,p. 45
+q030,"How long should organisms be observed during a water toxicity test?","24 to 48 hours",fao_1993_water_quality_fish_health.pdf,p. 45
+q031,"How are periphyton samples collected from submerged surfaces?","Using long-handled tweezers, scrapers, or stiff brushes",fao_1993_water_quality_fish_health.pdf,p. 45
+q032,"What factors can allow WSSV to trigger a white spot disease outbreak in shrimp ponds?","Environmental stress factors combined with a high proportion of infected shrimp",mpeda_2003_shrimp_health_extension.pdf,p. 15
+q033,"Through which routes can WSSV spread into a shrimp farm?","Shrimp seed, water, carrier animals, infected shrimp, and farm equipment",mpeda_2003_shrimp_health_extension.pdf,p. 15
+q034,"Which stages of shrimp farming should farmers manage to reduce white spot disease risk?","Stocking season, pond preparation, water and pond-bottom management, seed screening, feeding, and disease treatment",mpeda_2003_shrimp_health_extension.pdf,p. 15
+q035,"Which plant-based protein ingredient is most commonly used in shrimp feed?","Soybean meal (SBM)",ciba_2022_shrimp_culture_disease.pdf,p. 132
+q036,"What is the minimum protein content of high-grade soybean meal used in shrimp feed?","49%",ciba_2022_shrimp_culture_disease.pdf,p. 132
+q037,"Which cereal ingredients are commonly used as energy sources in shrimp feed?","Wheat, wheat by-products, and broken rice",ciba_2022_shrimp_culture_disease.pdf,p. 132
+q038,"How much soil should be collected from an EHP-infected shrimp pond for testing?","Approximately 5 kg",ciba_2021_ehp_management.pdf,p. 79
+q039,"How much soil and DNA extraction buffer are used in the initial extraction step?","250 mg of soil and 500 µl of DNA extraction buffer",ciba_2021_ehp_management.pdf,p. 79
+q040,"At what temperature and for how long is the soil sample incubated during DNA extraction?","65°C for 10 minutes",ciba_2021_ehp_management.pdf,p. 79
+q041,"Which reference substance is commonly used to check the accuracy of aquatic toxicity tests?","Potassium dichromate (K₂Cr₂O₇)",fao_1993_water_quality_fish_health.pdf,p. 51
+q042,"How is a chemical classified if its 48-hour LC50 is between 100 and 1,000 mg/L?","Low toxicity",fao_1993_water_quality_fish_health.pdf,p. 51
+q043,"What does an LC50 value represent in an acute toxicity test?","The concentration that kills 50% of the test organisms within the test period",fao_1993_water_quality_fish_health.pdf,p. 51
+q044,"How long should reservoir water be stored before pumping it into shrimp culture ponds?","At least 14 days",mpeda_2003_shrimp_health_extension.pdf,p. 22
+q045,"What mesh size should be used to filter incoming water and prevent disease carriers from entering shrimp ponds?","A net or filter bag with 60 holes per inch or finer",mpeda_2003_shrimp_health_extension.pdf,p. 22
+q046,"How deep should the water be in a reservoir pond if a farmer has only one grow-out pond?","At least 2 metres",mpeda_2003_shrimp_health_extension.pdf,p. 22
+q047,"What was the average shrimp yield in traditional Indian brackishwater aquaculture systems?","150–200 kg/ha",ciba_2022_shrimp_culture_disease.pdf,p. 146
+q048,"In which year did scientific shrimp farming begin at Kakdwip, West Bengal?","1973",ciba_2022_shrimp_culture_disease.pdf,p. 146
+q049,"How long is each dehydration step during EHP tissue processing?","1 hour",ciba_2021_ehp_management.pdf,p. 89
+q050,"At what temperature is paraffin maintained during tissue embedding for EHP examination?","54–56°C",ciba_2021_ehp_management.pdf,p. 89
