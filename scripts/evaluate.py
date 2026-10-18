@@ -13,8 +13,8 @@ from src.keyword_search import keyword_search
 from src.hybrid import fuse
 
 GOLDEN_PATH = "data/golden.csv"
-K = 1
-MODE = "hybrid"   # "dense" or "keyword" or "hybrid"
+K = 5
+MODE = "keyword"   # "dense" or "keyword" or "hybrid"
 CANDIDATES = 20   # how many each search returns before fusing
 
 def main() -> None:

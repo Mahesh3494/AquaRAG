@@ -10,8 +10,8 @@ from src.pipeline import index_pdf
 from src.store import connect, create_table
 
 CORPUS_DIR = Path("corpus")
-CHUNK_SIZE = 500
-OVERLAP = 50
+CHUNK_SIZE = 1000
+OVERLAP = 100
 
 # 1. Connect to the real database (the default name, no argument needed).
 conn = connect()
