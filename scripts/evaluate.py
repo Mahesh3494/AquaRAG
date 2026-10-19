@@ -11,10 +11,11 @@ from src.evaluation import is_hit, page_number
 from src.store import connect, search, load_all_chunks
 from src.keyword_search import keyword_search
 from src.hybrid import fuse
+from src.rerank import rerank
 
 GOLDEN_PATH = "data/golden.csv"
-K = 5
-MODE = "keyword"   # "dense" or "keyword" or "hybrid"
+K = 1
+MODE = "rerank"   # "dense" or "keyword" or "hybrid"
 CANDIDATES = 20   # how many each search returns before fusing
 
 def main() -> None:
@@ -25,7 +26,7 @@ def main() -> None:
     # 2. Open a database connection with connect().
     conn = connect()
     # NEW
-    if MODE in ("keyword", "hybrid"):
+    if MODE in ("keyword", "hybrid", "rerank"):
         chunks = load_all_chunks(conn)
 
     # 3. Make a counter for hits, starting at 0.
@@ -39,6 +40,9 @@ def main() -> None:
             results = search(conn, query_vector, K)
         elif MODE == "keyword":
             results = keyword_search(chunks, row["question"], K)
+        elif MODE == "rerank":
+            candidates = keyword_search(chunks, row["question"], CANDIDATES)
+            results = rerank(row["question"], candidates, K)
         else:
             query_vector = embed_texts([row["question"]])[0]
             dense_results = search(conn, query_vector, CANDIDATES)
