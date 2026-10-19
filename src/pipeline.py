@@ -6,6 +6,9 @@ from src.ingestion import build_chunks
 from src.store import insert_chunks, search, load_all_chunks
 from src.generation import answer
 from src.keyword_search import keyword_search
+from src.rerank import rerank
+
+CANDIDATES = 20
 
 def index_pdf(
     conn: psycopg.Connection, pdf_path: Path, chunk_size: int, overlap: int
@@ -45,7 +48,9 @@ def ask(conn: psycopg.Connection, question: str, k: int = 5) -> str:
     """
     # 1.Load every chunk
     chunks = load_all_chunks(conn)
-    # 2. Keyword-search them
-    results = keyword_search(chunks, question, k)
+    # 2. Keyword search for CANDIDATES chunks
+    candidates = keyword_search(chunks, question, CANDIDATES)
+    # Rerank them, keep the top k
+    results = rerank(question, candidates, k)
     # 3. Pass question and results to answer(), and return the result.
     return answer(question, results)
