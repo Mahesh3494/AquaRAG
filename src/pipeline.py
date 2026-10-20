@@ -4,9 +4,10 @@ import psycopg
 from src.embeddings import embed_texts
 from src.ingestion import build_chunks
 from src.store import insert_chunks, search, load_all_chunks
-from src.generation import answer
+from src.generation import answer, chat_messages
 from src.keyword_search import keyword_search
 from src.rerank import rerank
+from src.agent import run_agent
 
 CANDIDATES = 20
 
@@ -54,3 +55,30 @@ def ask(conn: psycopg.Connection, question: str, k: int = 5) -> str:
     results = rerank(question, candidates, k)
     # 3. Pass question and results to answer(), and return the result.
     return answer(question, results)
+
+def make_real_search(chunks: list[dict], k: int):
+    """Build a search(query) function with chunks and k already fixed.
+
+    The agent only ever calls search(query); this bakes in the rest.
+    """
+    def search(query: str) -> list[dict]:
+        # Keyword search for CANDIDATES chunks, then rerank to the top k.
+        # Same two lines as in ask(), but using `query`.
+        candidates = keyword_search(chunks, query, CANDIDATES)
+        results = rerank(query, candidates, k)
+        return results
+    return search
+
+
+def ask_agent(conn, question: str, k: int = 5) -> tuple[str, list[dict]]:
+    """Answer with the agent: it may reword and search more than once.
+
+    Returns (answer text, every result the agent saw — [n] means item n-1).
+    """
+    # 1. Load all chunks.
+    chunks = load_all_chunks(conn)
+    # 2. Build the search function with make_real_search(chunks, k).
+    search = make_real_search(chunks, k)
+    # 3. Call run_agent with the question, that search function, and
+    #    chat_messages as the llm. Return what it returns.
+    return run_agent(question, search, chat_messages)
