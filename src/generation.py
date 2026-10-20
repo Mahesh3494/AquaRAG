@@ -99,7 +99,7 @@ def chat_messages(messages: list[dict]) -> str:
     resp = requests.post(
         API_URL,
         headers={"Authorization": f"Bearer {key}"},
-        json={"model": MODEL, "messages": messages},
+        json={"model": MODEL, "messages": messages, "temperature": 0},
     )
     resp.raise_for_status()
     return resp.json()["choices"][0]["message"]["content"]

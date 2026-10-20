@@ -18,7 +18,7 @@ from src.pipeline import make_real_search
 GOLDEN_PATH = "data/golden.csv"
 K = 5
 CANDIDATES = 20
-MODE = "agent"   # "pipeline" or "agent"
+MODE = "pipeline"   # "pipeline" or "agent"
 
 
 def main() -> None:
