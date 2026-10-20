@@ -1,5 +1,7 @@
 """A minimal agent: the LLM decides whether to search again or answer."""
 
+from src.generation import NO_ANSWER
+
 SEARCH = "SEARCH"
 ANSWER = "ANSWER"
 
@@ -26,3 +28,24 @@ def parse_action(reply: str) -> tuple[str, str]:
         return(ANSWER, text[len("ANSWER:"):].strip())
     # 4. Otherwise return (ANSWER, the whole stripped text)
     return (ANSWER, text)
+
+def agent_system_prompt() -> str:
+    """The rules the agent works under.
+
+    Must tell the model:
+      - it answers aquaculture questions using a search tool over the documents
+      - to search, reply with exactly one line: SEARCH: <query>
+        (it may reword the query — e.g. expand abbreviations like PLs)
+      - when the results are enough, reply: ANSWER: <answer>, using only the
+        search results, citing the [n] labels
+      - if it has searched and the answer still isn't there, reply:
+        ANSWER: <NO_ANSWER>
+    """
+    return(
+        f"You are going to answer aquaculture questions using a search tool over the aquaculture documents\n"
+        f"to search, reply with exactly one line: {SEARCH}: <query>\n"
+        f"you can reword the query (expand abbreviations, use different terms) and search more than once if the results don't answer the question.\n"
+        f"when the results are enough, reply: {ANSWER}: <answer>, using only the search results, citing the [n] labels\n"
+        f"if you searched already and the answer isn't there, reply: {ANSWER}: {NO_ANSWER}\n"
+        f"Every reply must start with {SEARCH}: or {ANSWER}: and contain nothing else before it."
+    )
