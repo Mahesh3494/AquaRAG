@@ -9,11 +9,14 @@ import csv
 
 from src.embeddings import embed_texts
 from src.evaluation import page_number
-from src.store import connect, search
+from src.store import connect, search, load_all_chunks
+from src.keyword_search import keyword_search
+from src.rerank import rerank
 
 GOLDEN_PATH = "data/golden.csv"
-MISSES = ["q006", "q009", "q015", "q017"]
-K = 5
+MISSES = ["q006", "q009", "q027", "q028", "q029", "q030", "q043", "q044"]
+K = 3
+CANDIDATES = 20
 
 
 def chunks_on_page(conn, source_doc: str, page: int) -> list[str]:
@@ -42,6 +45,7 @@ def main() -> None:
     rows = list(csv.DictReader(open(GOLDEN_PATH, encoding="utf-8-sig")))
     # 2. Open a connection.
     conn = connect()
+    chunks = load_all_chunks(conn)
     # 3. For each row whose id is in MISSES:
     for row in rows:
         if row["id"] in MISSES:
@@ -51,8 +55,8 @@ def main() -> None:
     #    b. Print every chunk from chunks_on_page for that doc + page.
             print(chunks_on_page(conn, row["source_doc"], expected_page))
     #    c. Embed the question, search with K.
-            query_vector = embed_texts([row["question"]])[0]
-            results = search(conn, query_vector, K)
+            candidates = keyword_search(chunks, row["question"], CANDIDATES)
+            results = rerank(row["question"], candidates, K)
     #    d. For each result, print its source_doc, page, score
     #       (2 decimals), and the first 150 characters of its text.
             for result in results:
