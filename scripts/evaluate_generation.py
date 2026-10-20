@@ -7,29 +7,38 @@ Run:  python -m scripts.evaluate_generation
 import csv
 
 from src.evaluation import cited_correct_page, is_hit, page_number, parse_citations
-from src.generation import NO_ANSWER, answer
+from src.generation import NO_ANSWER, answer, chat_messages
 from src.keyword_search import keyword_search
 from src.rerank import rerank
 from src.store import connect, load_all_chunks
 from src.judge import judge
+from src.agent import run_agent
+from src.pipeline import make_real_search
 
 GOLDEN_PATH = "data/golden.csv"
 K = 5
 CANDIDATES = 20
+MODE = "agent"   # "pipeline" or "agent"
 
 
 def main() -> None:
     rows = list(csv.DictReader(open(GOLDEN_PATH, encoding="utf-8-sig")))
     conn = connect()
     chunks = load_all_chunks(conn)
+    search = make_real_search(chunks, K)
+    total_searches = 0
 
     retrieved = abstained = cited_ok = cited_ok_when_retrieved = judged_correct = 0
 
     for row in rows:
         question = row["question"]
-        candidates = keyword_search(chunks, question, CANDIDATES)
-        results = rerank(question, candidates, K)
-        text = answer(question, results)
+        if MODE == "pipeline":
+            candidates = keyword_search(chunks, question, CANDIDATES)
+            results = rerank(question, candidates, K)
+            text = answer(question, results)
+        else:
+            text, results = run_agent(question, search, chat_messages)
+            total_searches += len(results) // K
         expected_page = page_number(row["source_loc"])
 
         # ── YOUR PART: three lines, each using a function or constant you have ──
@@ -60,6 +69,7 @@ def main() -> None:
     print(f"Cited the right page:        {cited_ok}/{n}")
     print(f"  …when retrieval had it:    {cited_ok_when_retrieved}/{retrieved}")
     print(f"Judge says correct:          {judged_correct}/{n}")
+    print(f"Searches per question:       {total_searches / n:.1f}")
 
 
 if __name__ == "__main__":
