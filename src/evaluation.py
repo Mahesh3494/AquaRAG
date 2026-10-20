@@ -43,3 +43,40 @@ def page_number(source_loc: str) -> int:
     if m is None:
         raise ValueError(f"No page number found, the exact data given is {source_loc}")
     return int(m.group(1))    
+
+def parse_citations(answer_text: str) -> list[int]:
+    """Pull every [n] citation number out of an answer, in order.
+
+    "pH 7.5-8.5 [2]. Lime below 7.5 [1][3]." -> [2, 1, 3]
+    "No citations here."                       -> []
+    """
+    # 1. Use re.findall with the pattern r"\[(\d+)\]" on answer_text.
+    #    The (\d+) captures just the digits, so findall gives strings like "2".
+    found = re.findall(r"\[(\d+)\]", answer_text)
+    # 2. Convert each one to an int, collecting them in a list.
+    citations = []
+    for digits in found:
+        citations.append(int(digits))
+    # 3. Return the list.
+    return citations
+
+
+def cited_correct_page(citations: list[int], results: list[dict],
+                       expected_doc: str, expected_page: int) -> bool:
+    """Does any citation point at a result from the expected doc and page?
+
+    Citation n means results[n-1]. Citations outside 1..len(results)
+    are ignored (the model invented a label that doesn't exist).
+    """
+    # 1. For each n in citations:
+    for n in citations:
+    #    a. If n is less than 1 or greater than len(results), skip it.
+        if n<1 or n>len(results):
+            continue
+    #    b. Look up results[n - 1].
+        result = results[n-1]
+    #    c. If its source_doc and page both match, return True.
+        if result["source_doc"] == expected_doc and result["page"] == expected_page:
+            return True
+    # 2. If the loop finishes, return False.
+    return False
