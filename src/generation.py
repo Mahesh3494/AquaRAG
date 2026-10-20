@@ -93,23 +93,24 @@ def answer(question: str, results: list[dict]) -> str:
     # 4. Return the content, using the expression you worked out.
     return resp.json()["choices"][0]["message"]["content"]
 
-def chat(system: str, user: str) -> str:
-    """Send one system + one user message to DeepSeek, return the reply text."""
+def chat_messages(messages: list[dict]) -> str:
+    """Send a whole conversation to DeepSeek, return the reply text."""
     key = os.getenv("DEEPSEEK_API_KEY")
     resp = requests.post(
         API_URL,
         headers={"Authorization": f"Bearer {key}"},
-        json={
-            "model": MODEL,
-            "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-        },
+        json={"model": MODEL, "messages": messages},
     )
     resp.raise_for_status()
     return resp.json()["choices"][0]["message"]["content"]
 
+
+def chat(system: str, user: str) -> str:
+    """One system + one user message — the common case."""
+    return chat_messages([
+        {"role": "system", "content": system},
+        {"role": "user", "content": user},
+    ])
 
 def answer(question: str, results: list[dict]) -> str:
     """Ask DeepSeek the question, grounded in the retrieved chunks."""
