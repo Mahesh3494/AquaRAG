@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import psycopg
 from pgvector.psycopg import register_vector
@@ -5,8 +6,16 @@ from pgvector.psycopg import register_vector
 from src.embeddings import EMBEDDING_DIM
 
 def connect(dbname: str = "aquarag") -> psycopg.Connection:
-    """open a databade connection that understands the vextor type."""
-    conn = psycopg.connect(dbname=dbname, autocommit=True)
+    """Open a database connection that understands the vector type.
+
+    If DATABASE_URL is set (e.g. inside Docker), use it.
+    Otherwise connect to the local WSL Postgres by name, as before.
+    """
+    url = os.getenv("DATABASE_URL")
+    if url:
+        conn = psycopg.connect(url, autocommit=True)
+    else:
+        conn = psycopg.connect(dbname=dbname, autocommit=True)
     conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
     register_vector(conn)
     return conn
