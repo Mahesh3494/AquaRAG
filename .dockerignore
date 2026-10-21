@@ -1,0 +1,8 @@
+.venv
+corpus
+.env
+__pycache__
+*.txt
+!requirements.txt
+.git
+drills

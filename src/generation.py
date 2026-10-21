@@ -63,6 +63,8 @@ def system_prompt() -> str:
     # Write the instructions as one string and return it. The wording is
     # yours; the three requirements above are not.
     return( 
+        f"you are an assistant that answers shrimp and fish farming questions from aquaculture manuals\n"
+        f"for greetings or questions about yourself, reply with a short introduction instead of {NO_ANSWER}\n"
         f"Answer only from the numbered context, do not use your own knowledge to answer.\n" 
         f"Cite the bracketed label after each claim.\n"
         f"if the answer is not present in the context provided then reply with exactly {NO_ANSWER}"
