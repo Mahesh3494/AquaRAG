@@ -14,7 +14,7 @@ from src.hybrid import fuse
 from src.rerank import rerank
 
 GOLDEN_PATH = "data/golden.csv"
-K = 1
+K = 5
 MODE = "rerank"   # "dense" or "keyword" or "hybrid"
 CANDIDATES = 20   # how many each search returns before fusing
 
