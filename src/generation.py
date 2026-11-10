@@ -9,6 +9,8 @@ load_dotenv()
 API_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-chat"
 NO_ANSWER = "Not found in the provided documents."
+# Seconds to wait for DeepSeek. Without a timeout a stalled call waits forever.
+TIMEOUT_S = 60
 
 
 def build_prompt(question: str, results: list[dict]) -> str:
@@ -70,38 +72,18 @@ def system_prompt() -> str:
         f"if the answer is not present in the context provided then reply with exactly {NO_ANSWER}"
     )
 
-def answer(question: str, results: list[dict]) -> str:
-    """Ask DeepSeek the question, grounded in the retrieved chunks."""
-    # 1. Read DEEPSEEK_API_KEY from the environment.
-    key = os.getenv("DEEPSEEK_API_KEY")
-    # 2. POST to API_URL with
-    #      headers: Authorization set to "Bearer " plus the key
-    #      json:    model, and messages — a list of two dicts: one with
-    #               role "system" holding system_prompt(), one with role
-    #               "user" holding build_prompt(question, results)
-    resp = requests.post(
-        API_URL,
-        headers={"Authorization": f"Bearer {key}"},
-        json={
-            "model": MODEL,
-            "messages": [
-                {"role": "system", "content": system_prompt()},
-                {"role": "user", "content": build_prompt(question, results)},
-            ],
-        },
-    )
-    # 3. Call resp.raise_for_status() so a bad status fails loudly.
-    resp.raise_for_status()
-    # 4. Return the content, using the expression you worked out.
-    return resp.json()["choices"][0]["message"]["content"]
-
 def chat_messages(messages: list[dict]) -> str:
-    """Send a whole conversation to DeepSeek, return the reply text."""
+    """Send a whole conversation to DeepSeek, return the reply text.
+
+    The only place that calls DeepSeek: answer(), chat() and the agent all
+    come through here, so the timeout below covers every call.
+    """
     key = os.getenv("DEEPSEEK_API_KEY")
     resp = requests.post(
         API_URL,
         headers={"Authorization": f"Bearer {key}"},
         json={"model": MODEL, "messages": messages, "temperature": 0},
+        timeout=TIMEOUT_S,
     )
     resp.raise_for_status()
     return resp.json()["choices"][0]["message"]["content"]

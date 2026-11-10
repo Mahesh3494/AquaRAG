@@ -11,6 +11,11 @@ from src.agent import run_agent
 
 CANDIDATES = 20
 
+
+class EmptyIndexError(Exception):
+    """There are no chunks to search: scripts.index_corpus hasn't been run."""
+
+
 def index_pdf(
     conn: psycopg.Connection, pdf_path: Path, chunk_size: int, overlap: int
 ) -> int:
@@ -33,7 +38,7 @@ def index_pdf(
     # 5. Return how many records there were.
     return len(records)
 
-def ask(conn: psycopg.Connection, question: str, k: int = 5) -> str:
+def ask(conn: psycopg.Connection, question: str, k: int = 5) -> tuple[str, list[dict]]:
     """Answer a question from the indexed corpus, with citations.
 
     Args:
@@ -42,19 +47,25 @@ def ask(conn: psycopg.Connection, question: str, k: int = 5) -> str:
         k: How many chunks to retrieve.
 
     Returns:
-        The model's answer, citing retrieved chunks by their label.
+        (answer text, the results it was built from). Label [n] in the
+        answer means results[n-1] — same rule as ask_agent.
 
     Raises:
-        ValueError: If nothing was retrieved — an empty index.
+        EmptyIndexError: If there are no chunks (empty table, or no table yet).
     """
     # 1.Load every chunk
-    chunks = load_all_chunks(conn)
+    try:
+        chunks = load_all_chunks(conn)
+    except psycopg.errors.UndefinedTable:
+        raise EmptyIndexError("the chunks table doesn't exist yet")
+    if not chunks:
+        raise EmptyIndexError("the chunks table is empty")
     # 2. Keyword search for CANDIDATES chunks
     candidates = keyword_search(chunks, question, CANDIDATES)
     # Rerank them, keep the top k
     results = rerank(question, candidates, k)
-    # 3. Pass question and results to answer(), and return the result.
-    return answer(question, results)
+    # 3. Return the answer AND the results, so the caller can show [n]'s source.
+    return answer(question, results), results
 
 def make_real_search(chunks: list[dict], k: int):
     """Build a search(query) function with chunks and k already fixed.

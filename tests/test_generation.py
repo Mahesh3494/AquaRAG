@@ -1,5 +1,6 @@
 import pytest
 
+from src import generation
 from src.generation import NO_ANSWER, build_prompt, system_prompt
 
 RESULTS = [
@@ -51,3 +52,22 @@ def test_empty_results_raises():
 
 def test_system_prompt_contains_the_refusal_string():
     assert NO_ANSWER in system_prompt()
+
+def test_every_deepseek_call_has_a_timeout(monkeypatch):
+    sent = {}
+
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"choices": [{"message": {"content": "hi"}}]}
+
+    def fake_post(url, **kwargs):
+        sent.update(kwargs)
+        return FakeResponse()
+
+    monkeypatch.setattr(generation.requests, "post", fake_post)
+
+    assert generation.chat("system", "user") == "hi"
+    assert sent["timeout"] == generation.TIMEOUT_S
